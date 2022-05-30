@@ -59,27 +59,25 @@ describe("Token contract", function () {
         expect(await proxied.connect(owner).getNum()).equal(1)
         await proxied.setNum(25)
         expect(await proxied.connect(owner).getNum()).equal(25)
+        expect(await proxyContract.getImplementation()).equal(impl1Contract.address);
+        await proxyContract.setImplementation(impl2Contract.address)
+        expect(await proxyContract.getImplementation()).equal(impl2Contract.address);
+
+
+        const abi2 = ["function initialize() public", "function getNum() public view returns (uint256) ", "function mulNum() public "];
+        const proxied2 = new ethers.Contract(proxyContract.address, abi2, owner);
+        //await proxied2.initialize()
+        expect(await proxied2.connect(owner).getNum()).equal(25)
+        await proxied2.mulNum()
+        expect(await proxied2.connect(owner).getNum()).equal(50)
+
 
 
 
         
 
       });
-      it("swap and check implementation2", async function () {
-       
-        expect(await proxyContract.getImplementation()).equal(impl1Contract.address);
-        await proxyContract.setImplementation(impl2Contract.address)
-        expect(await proxyContract.getImplementation()).equal(impl2Contract.address);
-
-
-        const abi = ["function initialize() public", "function getNum() public view returns (uint256) ", "function mulNum() public "];
-        const proxied = new ethers.Contract(proxyContract.address, abi, owner);
-        await proxied.initialize()
-        expect(await proxied.connect(owner).getNum()).equal(1)
-        await proxied.mulNum()
-        expect(await proxied.connect(owner).getNum()).equal(2)
-
-      });
+      
       
     });
 
